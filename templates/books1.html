@@ -1,0 +1,175 @@
+{% extends 'template.html' %}
+
+{% block title %}Books - Library Management{% endblock %}
+
+{% block content %}
+
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col action-btn-container" style="background-color: white; border: none;padding-right: 10px;">
+                <button id="addbtn" class=" btn btn-primary" type="button" onclick="toggleModal()">Add Book</button>
+            </div>
+        </div>
+        <div class="row table-data">
+            <div class="col">
+                <table class="table">
+                    
+                    <thead>
+                        <tr>
+                            <th scope="col" class="bookid">ID</th>
+                            <th scope="col" class="title">Title</th>
+                            <th scope="col" class="authors">Authors</th>
+                            <th scope="col" class="publishers">Publishers</th>
+                            <th scope="col" class="ratings">Rating</th>
+                            <th scope="col" colspan="2" class="action-btn">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td scope="col" class="bookid">{{book.bookID}}</th>
+                            <td class="title">{{book.title}}</td>
+                            <td class="authors">{{book.authors}}</td>
+                            <td class="publishers">{{book.publishers}}</td>
+                            <td class="ratings">{{book.average_rating}}</td>
+                            <td class="action-btn primary">
+                                View
+                            </td>
+                            <td class="action-btn ">
+                                <i class="fa fa-colon action-btn-menu">:</i>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>     
+</div>
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Book Details</h5>
+            <span id="close-btn" type="button" data-dismiss = "modal-overlay" aria-label="Close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="container">
+                <div class="row">
+                    <div class="api-reponse" id="api-response">
+
+                    </div>
+                    <div class="input-group" style="column-gap: 0;">
+                        <input type="text" class="input-control input-searchbox" id="input-searchbox" placeholder="Search book by title or author"/>
+                        <input type="number" class="input-control" min="20" id="quantity" placeholder="No of Qty"/>
+                        <button class="btn-dark btn-search" onclick="importAndAddBook()">Search</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class=""></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+
+        </div>
+    </div>
+        <!-- <button onclick="toggleModal()" id="closemodal" class="closebtn">Close Modal</button> -->
+    
+</div>
+
+<script>
+    var table = document.querySelector('.table-data table');
+    var caption = document.getElementById('tableCaption');
+
+    table.addEventListener('scroll', function() {
+        caption.style.transform = 'translateX(' + (-table.scrollLeft) + 'px)';
+    });
+
+    var modal = document.getElementById("modal")
+    var btn = document.getElementById("addbtn")
+    var closeBtn = document.getElementById('close-btn')
+    btn.onclick = function(){
+        modal.style.display = "block"
+    }
+    closeBtn.onclick = function(){
+        modal.style.display = 'none'
+    }
+
+    async function updateDOM() {
+        try {
+            const response = await fetch('/books/data');
+            var data = await response.json();
+            console.log(data)
+            data = data['data']
+            
+            if(response.status ==200){
+                const booksList = document.getElementsByTagName('tbody')[0]
+
+                booksList.innerHTML = '';
+
+                data.forEach(book => {
+                    console.log(book)
+                    const listItem = `
+                    <tr>
+                        <td scope="col" class="bookid">`+book.bookID+`</th>
+                        <td class="title">`+book.title+`</td>
+                        <td class="authors">`+book.authors+`</td>
+                        <td class="publishers">`+book.publisher+`</td>
+                        <td class="ratings">`+book.average_rating+`</td>
+                        <td class="action-btn primary">
+                            View
+                        </td>
+                        <td class="action-btn ">
+                            <i class="fa fa-colon action-btn-menu">:</i>
+                        </td>
+                    </tr>
+                    `
+                    listItem.textContent = `${book.title} by ${book.authors}`;
+                    
+                    booksList.innerHTML+=listItem
+                });
+            }else{
+                throw new Error(data['message'])
+            }
+        } catch (error) {
+            alert(error)
+        }
+        
+        
+        
+    }
+
+    updateDOM()
+
+    async function importAndAddBook(){
+        var keyowrd = document.getElementById('input-searchbox').value?.trim()
+        var quantity = document.getElementById('quantity').value
+        if(quantity<20)
+        quantity=20
+        if(keyowrd.length>0){
+            try {
+                const response = await fetch('/books', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body:JSON.stringify({'keyword':keyowrd,'quantity':quantity})
+                                })
+                var data = await response.json()
+                if(response.status ==201){
+                    
+                    closeBtn.click()
+                    alert(data['message'])
+                }else{
+                    throw new Error(data['message'])
+                }
+            } catch (error) {
+                alert(error)
+            }
+            
+        }
+        
+    }
+</script>
+{% endblock %}

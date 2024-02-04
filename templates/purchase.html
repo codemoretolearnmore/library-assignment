@@ -1,0 +1,484 @@
+
+
+{% extends 'template.html' %}
+
+{% block title %}Purchase - Library Management{% endblock %}
+
+{% block content %}
+<style>
+    .purchase-date{
+        max-width: 60px;
+    }
+    .book-title{
+        max-width: 300px;
+    }
+    .qty{
+        max-width: 40px;
+    }
+    .status{
+        max-width: 80px;
+    }
+    .amount{
+        max-width: 60px;
+    }
+    @media (max-width: 576px){
+        .main-wrapper{
+            max-width: 540px;
+        }
+        .table-data{
+            width: 100%;
+            overflow-x: auto;
+            margin: 0 auto;
+        }
+        .table-data .col{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .caption-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        th, td{
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px solid #ebebec;
+        }
+        th,td:not(:first-child):not(:last-child){
+            min-width: 60px;
+        }
+        caption{
+            position: relative;
+            left: 0;
+            z-index: 1;
+            top: 0;
+            text-align: left;
+        }
+        thead, tbody{
+            overflow-x: auto;
+        }
+        .action-btn{
+            max-width: 60px !important;
+        }
+        th:first-child,
+        td:first-child{
+            position: sticky;
+            left: 0;
+            background-color: white;
+            
+        }
+        th:last-child,
+        td:last-child{
+            right:0;
+            position: sticky;
+            background-color: white;
+        }
+
+        .table-data .col{
+            overflow-x: auto;
+        }
+        th::before{
+            content: ' ';
+            display: block;
+            top: 0;
+            left: 0;
+            background-color: #f2f2f2;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .purchase-date{
+            max-width: 150px;
+        }
+        .book-title{
+            max-width: 220px;
+        }
+        .qty{
+            width: 60px;
+        }
+        .status{
+            max-width: 100px;
+        }
+        .amount{
+            max-width: 100px;
+        }
+    }
+
+    @media (max-width: 768px){
+        .main-wrapper{
+            max-width: 750px;
+        }
+        .table-data{
+            width: 100%;
+            overflow-x: auto;
+            margin: 0 auto;
+        }
+        .table-data .col{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .caption-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        th, td{
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px solid #ebebec;
+        }
+        th,td:not(:first-child):not(:last-child){
+            min-width: 60px;
+        }
+        caption{
+            position: relative;
+            left: 0;
+            z-index: 1;
+            top: 0;
+            text-align: left;
+        }
+        thead, tbody{
+            overflow-x: auto;
+        }
+        .action-btn{
+            max-width: 60px !important;
+        }
+        th:first-child,
+        td:first-child{
+            position: sticky;
+            left: 0;
+            background-color: white;
+            
+        }
+        th:last-child,
+        td:last-child{
+            right:0;
+            position: sticky;
+            background-color: white;
+        }
+
+        .table-data .col{
+            overflow-x: auto;
+        }
+        th::before{
+            content: ' ';
+            display: block;
+            top: 0;
+            left: 0;
+            background-color: #f2f2f2;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .purchase-date{
+            max-width: 150px;
+        }
+        .book-title{
+            max-width: 220px;
+        }
+        .qty{
+            max-width: 60px;
+        }
+        .status{
+            max-width: 100px;
+        }
+        .amount{
+            max-width: 100px;
+        }
+    }
+    #results{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding-left: 0;
+        border-radius: 0.25rem;
+        margin-top: 0;
+        padding: 0;
+        margin-left: 0;
+        list-style: none;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    li.group-item{
+        position: relative;
+        width: auto;
+        display: block;
+        padding: 0.5rem 0.4rem;
+        text-decoration: none;
+        background-color: #fff;
+        border: 1px solid rgba(0,0,0,0.125);
+        cursor: pointer;
+        height: 40px;
+    }
+
+</style>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col action-btn-container" style="background-color: white; border: none;padding-right: 10px;">
+                <button id="addbtn" class=" btn btn-primary" type="button" data-toggle = "modal" data-target = "#sidebar-right">Purchase Book</button>
+            </div>
+        </div>
+        <div class="row table-data">
+            <div class="col">
+                <table class="table">
+                    
+                    <thead>
+                        <tr>
+                            <th scope="col" class="purchase-date">Purchase Date</th>
+                            <th scope="col" class="book-title">Book Title</th>
+                            <th scope="col" class="qty">Qty</th>
+                            <th scope="col" class="amount">Dues Pending/Paid</th>
+                            <th scope="col" class="action-btn" style="width: 60px;">Actions</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>     
+</div>
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">User Details</h5>
+            <span id="close-btn" type="button" data-dismiss = "modal-overlay" aria-label="Close">X</span>
+        </div>
+        <div class="modal-body">
+            <div class="container mb-0">
+                <div class="row">
+                    <div id="api-reponse">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="input-control" id="keyword" placeholder="Search Book" style="width: 50%;" oninput="searchBooks()" />
+                        <!-- <button class="btn-dark btn-search" onclick="importAndAddBook()">Search</button> -->
+                        <input type="number" class="input-control" id="purchase_qty" placeholder="Units to Purchase"/>
+                    </div>
+                    <ul id="results"></ul>
+                </div>
+                
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="close">Close</button>
+            <button class="btn btn-primary" onclick="addPurchase()">Purchase</button>
+        </div>
+    </div>
+    
+</div>
+<script>
+
+    var modal = document.getElementById("modal")
+    var btn = document.getElementById("addbtn")
+    var closeBtn = document.getElementById('close-btn')
+    var hideBtn = document.getElementById('close')
+    btn.onclick = function(){
+        modal.style.display = "block"
+    }
+    closeBtn.onclick = function(){
+        modal.style.display = 'none'
+    }
+    hideBtn.onclick = function(){
+        modal.style.display = 'none'
+    }
+
+
+
+    async function updateDOM() {
+        try {
+            const userID = localStorage.getItem('userID')
+            const response = await fetch('/purchase/data',{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                    'userID':userID
+                }
+            });
+            var data = await response.json();
+            data = data['data']
+
+            if(response.status ==200){
+                const booksList = document.getElementsByTagName('tbody')[0]
+
+                booksList.innerHTML = '';
+                console.log(data)
+                data.forEach(purchase => {
+                    var status = ""
+                    var purchase_date=""
+                    purchase_date = purchase.transaction_date
+                    var dateObject = new Date(purchase_date)
+                    const year = dateObject.getFullYear();
+                    const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');  
+                    const day = dateObject.getDate().toString().padStart(2, '0');
+                    purchase_date = `${month}/${day}/${year}`
+                    var param = purchase_date
+                    purchase_date = new Date(purchase_date)
+
+                    var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+                    var yyyy = today.getFullYear();
+                    var today = mm + '/' + dd + '/' + yyyy;
+                    console.log('today', today)
+                    today = new Date(today)
+                    
+                    const diffTime = Math.abs(today - purchase_date);
+                    
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    console.log(purchase_date, today, diffDays)
+                    total_amount = diffDays*25
+                    if(purchase.return_date ==null || purchase.return_date ==""){
+                        status = 'Not Returned'
+                    }
+                    
+                    else status = 'Returned'
+    
+                    var temp = status=='Returned'?`<span >Returned</span>`:`<button class="btn btn-secondary" id ="return_`+purchase.purchase_id+`" onclick="returnBook('`+purchase.purchase_id+`','`+param+`')">Return</button>`
+                    const listItem = `
+                        <tr>
+                            <td class="purchase-date">`+purchase_date+`</td>
+                            <td class="book_title">`+purchase.title+`Temp</td>
+                            <td class="qty">`+purchase.qty+`</td>
+                            <td class="amount">`+total_amount+`</td>
+                            <td class="action-btn" style="width: 50px;text-align: center;">`+temp+`
+                            </td>
+                        </tr>
+                    `
+                    
+                    booksList.innerHTML+=listItem
+                });
+            }
+            else throw new Error(data['message'])
+        } catch (error) {
+            alert(error)
+            console.log(error)
+        }
+        
+    }
+
+    updateDOM()
+
+    async function searchBooks(){
+        localStorage.setItem('selectedBook',null)
+        const searchInput = document.getElementById('keyword').value
+        var resultContainer = document.getElementById('results')
+        resultContainer.innerHTML = ''
+        resultContainer.style.display = 'flex'
+        try {
+            if (searchInput.trim() !== '' && searchInput.trim().length>=3) {
+                const response = await fetch(`/books/data?keyword=${encodeURIComponent(searchInput)}`);
+                var data = await response.json(); 
+                
+                if (response.status!==200) {
+                    throw new Error(data['message']);
+                }
+
+                var books = data['data']
+                console.log(books.length)
+                if(books.length>0){
+                    books.forEach(book => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = book.title;
+                        listItem.className = 'group-item'
+                        resultContainer.appendChild(listItem);
+                        listItem.addEventListener('click', () => handleSelection(book));
+
+                        
+                    });
+                }else{
+                    const listItem = document.createElement('li');
+                    listItem.textContent = 'No Book Found';
+                    listItem.className = 'group-item'
+                    resultContainer.appendChild(listItem)
+                }
+                
+            }
+            
+        }catch (error) {
+            console.error('An error occurred:', error.message);
+
+            resultContainer.innerHTML = '<li>'+error+'.</li>';
+        }
+    }
+
+    function handleSelection(selectedBook){
+        var resultContainer = document.getElementById('results')
+        localStorage.setItem('selectedBook', selectedBook.bookID)
+        document.getElementById('keyword').value = selectedBook.title
+        resultContainer.style.display = 'none'
+
+    }
+    async function addPurchase(){
+        var bookID = localStorage.getItem('selectedBook')
+        var userID = localStorage.getItem('userID')
+        var qty = document.getElementById('purchase_qty').value
+        var payload = {bookID, qty}
+        console.log(payload)
+        var closeBtn = document.getElementById('close-btn')
+        try {
+            const response = await fetch('/purchase', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'userID':userID
+                                },
+                                body: JSON.stringify(payload)
+                            })
+            var result = await response.json()
+            if(response.status!==201)
+            throw new Error(result['message']);
+            closeBtn.click()
+            alert(result['message'])
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Purchase failed: '+error)
+        }
+     
+    }
+
+    async function returnBook(purchase_id, transaction_date){
+        console.log(typeof(transaction_date))
+
+        try {
+            var userID = localStorage.getItem('userID')
+            var payload = {
+                'purchase_id':purchase_id,
+                'transaction_date':transaction_date
+            }
+            const response = await fetch('/purchase', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'userID':userID
+                                },
+                                body: JSON.stringify(payload)
+                            })
+            
+            if(response.status==204){
+                alert('Book Returned Successfully')
+            }
+            else if(response.status==400){
+                throw new Error('No Purchase matching with this data')
+            }
+            else throw new Error('Internal Server Error')
+        } catch (error) {
+            alert(error)
+        }
+    }
+    
+   
+</script>
+
+{% endblock %}

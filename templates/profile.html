@@ -1,0 +1,183 @@
+
+
+{% extends 'template.html' %}
+
+{% block title %}Books - Library Management{% endblock %}
+
+{% block content %}
+<style>
+    .profile-wrapper{
+        margin: auto;
+    }
+   .profile-card {
+        width: 400px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100px;
+            margin: auto;
+        }
+
+        .image-container img {
+        width: 100%;
+        display: block;
+        border-radius: 50%;
+        }
+
+        .info-container {
+        padding: 16px;
+        /* text-align: center; */
+        }
+
+        .editable {
+        margin-bottom: 10px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        outline: none;
+        border: none;
+        text-align: center;
+        }
+        .non-editable{
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            border: none;
+            text-align: center;
+        }
+        .edit-mode {
+        border: 1px solid #3498db;
+        }
+        #saveBtn{
+            display: none;
+            align-items: center;
+            text-align: center;
+        }
+        #name{
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+</style>
+<div class="main-wrapper">
+    <div class="container">
+        
+        <div class="row">
+            <div class="profile-wrapper">
+                <div class="profile-card" id="profileCard">
+                    <div class="image-container">
+                      <img src="https://i.pinimg.com/280x280_RS/fe/7d/ee/fe7deef834e1fafe56f8023ced803ca9.jpg" alt="Profile Image">
+                    </div>
+                    <div class="info-container" id="info-container">
+                      
+                    </div>
+                  </div>
+            </div>
+            
+        </div>
+    </div>     
+</div>
+
+<script>
+
+    async function getUserProfile(){
+        const userID = localStorage.getItem('userID')
+        
+        try {
+            var response = await fetch('/user/profile',{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                    'userID':userID
+                }
+            })
+            var result = await response.json()
+            if(response.status ==200){
+                console.log(result['data'])
+                data = result['data']
+                const elem = document.getElementById('info-container')
+                const html = `
+                            <div class="editable" id="name">`+data['name']+`</div>
+                                <div class="non-editable" id="email">`+data['email']+`</div>
+                                <div class="editable" id="phone">`+data['phone_no']+`</div>
+                                <div class="editable" id="address">`+data['address']+`</div>
+                                <button id="editButton" class="btn btn-primary" onclick="toggleEditMode()">Edit</button>
+                                <button id="saveBtn" class="btn btn-primary" onclick="saveProfile()">Save</button>
+                            `
+                elem.innerHTML = html
+            }else throw new Error(result['message'])
+        } catch (error) {
+            aler(error)
+        }
+    }    
+    getUserProfile()
+    
+
+    function toggleEditMode() {
+        const infoElements = document.querySelectorAll('.editable');
+        const editButton = document.getElementById('editButton');
+        const saveBtn = document.getElementById('saveBtn')
+        infoElements.forEach(element => {
+            element.contentEditable = !element.isContentEditable;
+            element.classList.toggle('edit-mode');
+        });
+
+        saveBtn.style.display = 'block'
+        editButton.style.display = 'none'
+    }
+    
+    async function saveProfile(){
+        const infoElements = document.querySelectorAll('.editable');
+        const editButton = document.getElementById('editButton');
+        const saveBtn = document.getElementById('saveBtn')
+        const userID = localStorage.getItem('userID')
+        infoElements.forEach(element => {
+            element.contentEditable = !element.isContentEditable;
+            element.classList.toggle('edit-mode');
+        });
+        var name =''
+        var email =''
+        var phone_no = ''
+        var address = ''
+        name = document.getElementById('name').innerText
+        email = document.getElementById('email').innerText
+        phone_no = document.getElementById('phone').innerText
+        address = document.getElementById('address').innerText
+        var data = {'name':name,'phone_no':phone_no,'address':address}
+        console.log(data)
+        try {
+            var response = await fetch('/user', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'userID':userID,
+                                'name':name,
+                                'phone_no':phone_no,
+                                'address':address
+                            },
+                            body: JSON.stringify(data)
+                        })
+            if(response.status==201){
+                closeBtn.click()
+                var data = await response.json()
+                saveBtn.style.display = 'none'
+                editButton.style.display = 'block'
+                console.log(data)
+                alert(data['message'])
+            }else if(response.status==409|| response.status ==500){
+                var data = await response.json()
+                throw new Error(data['message'])
+            }
+        } catch (error) {
+            alert(error)
+        }
+    }
+</script>
+
+{% endblock %}

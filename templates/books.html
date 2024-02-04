@@ -1,0 +1,190 @@
+{% extends 'template.html' %}
+
+{% block title %}Books - Library Management{% endblock %}
+
+{% block content %}
+<style>
+    .main-container{
+        width: 100%;
+        padding: 5px;
+        overflow-x: scroll;
+    }
+    
+    .page-name{
+        text-align: center;
+        font-family: sans-serif;
+    }
+    .page-tag{
+        font-family: sans-serif;
+        font-size:medium;
+    }
+
+    .row{
+        width: 100%;
+        display: inline-flex;
+        float: right;
+        justify-content: space-between;
+    }
+    .action-btn-container{
+        width: 40%;
+        float: right;
+        text-align: right;
+        padding-right: 5px;
+    }
+    .btn{
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+    }
+    .btn-add-book{
+        color: #fff;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .btn-add-book:focus{
+        color: #fff;
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+        box-shadow: 0 0 0 0.25rem rgba(49,132,253,0.5);
+    }
+    table{
+        
+        border-spacing: 0;
+        padding: 8x;
+        box-sizing: border-box;
+        background-color: white;
+    }
+    td{
+        max-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 5px;
+    }
+    td:first-of-type{
+        width: 60px;
+        max-width: 60px;
+        
+    }
+    /* table td:first-child, table th:first-child{
+        position: absolute;
+        left: 0;
+    } */
+    td:nth-of-type(2){
+        width: 230px;
+        max-width: 230px;
+    }
+    td:nth-of-type(3){
+        width: 180px;
+        max-width: 180px;
+    }
+    td:nth-of-type(4){
+        width: 280px;
+        max-width: 280px;
+    }
+    td:nth-of-type(5){
+        width:120px;
+        max-width: 120px;
+    }
+    td:nth-of-type(6){
+        width: 80px;
+        max-width: 80px;
+    }
+
+    .bookid{
+        position: absolute;
+    }
+   
+    thead{
+        height: 36px;
+        border:  1px solid orange;
+        color: #212529;
+        font-weight: 600;
+        font-family: sans-serif;
+    }
+    th{
+        text-align: left;
+        justify-content: space-between;
+        padding: 5px;
+    }
+    table thead tr{
+        border-bottom: 1px solid black ;
+        font-family: Arial, Helvetica, sans-serif;
+        color: rgb(39, 38, 38);
+        padding: 2px;
+        
+    }
+    tbody tr{
+        height: 30px;
+        border-bottom: 1px solid black ;
+        font-family: Arial, Helvetica, sans-serif;
+        color: rgb(39, 38, 38);
+        padding: 2px;
+        width: 100%;
+    }
+    
+    tbody tr:hover{
+        background-color: rgb(229, 227, 227);
+    }
+    
+    
+    tbody tr td{
+        text-align: left;
+        border-bottom: 1px solid lightgray;
+        overflow: hidden;
+        width: 100px;
+        text-overflow: ellipsis;
+        height: 40px;
+     } 
+
+    
+</style>
+<div class="main-container">
+    <h3 class="page-name">Welcome to Books Management Page</h3>
+    <div class="row">
+        <p class="page-tag">Showing Books from</p>
+        <div class="action-btn-container">
+            <button class="btn btn-add-book">Add Book</button>
+        </div>
+    </div>
+    <div class="data-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="bookid">ID</th>
+                    <th class="title" >Title</th>
+                    <th class="authors">Authors</th>
+                    <th class="publisher">Publisher</th>
+                    <th class="publication_date">Publication Date</th>
+                    <th class="ratings">Rating</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in data %}
+                <tr style="max-height: 30px;">
+                    <td class="bookid" ><div>{{ book.bookID }}</div></td>
+                    <td class="title" ><div>{{ book.title }}</div></td>
+                    <td class="authors">{{ book.authors }}</td>
+                    <td class="pubisher">{{book.publisher}}</td>
+                    <td class="publication_date">{{book.publication_date}}</td>
+                    <td class="ratings">{{book.average_rating}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>  
+        </table>
+    </div>
+    
+</div>
+    
+{% endblock %}

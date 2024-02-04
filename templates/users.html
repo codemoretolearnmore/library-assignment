@@ -1,0 +1,186 @@
+
+
+{% extends 'template.html' %}
+
+{% block title %}Books - Library Management{% endblock %}
+
+{% block content %}
+<style>
+
+</style>
+<div class="main-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col action-btn-container" style="background-color: white; border: none;padding-right: 10px;">
+                <button id="addbtn" class=" btn btn-primary" type="button" data-toggle = "modal" data-target = "#sidebar-right">ADD User</button>
+            </div>
+        </div>
+        <div class="row table-data">
+            <div class="col">
+                <table class="table">
+                    
+                    <thead>
+                        <tr>
+                            <th scope="col" class="title">Name</th>
+                            <th scope="col" class="title">Email</th>
+                            <th scope="col" class="authors">Address</th>
+                            <th scope="col" class="publishers">Mobile No</th>
+                            <th scope="col" colspan="2" class="action-btn" style="width: 60px;">Actions</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="title" style="width:120px">`+user.name+`</td>
+                            <td class="title" style="width:140px">`+user.email+`Temp</td>
+                            <td class="publishers">`+user.address+`</td>
+                            <td class="publishers" style="width:120px">`+user.phone_no+`</td>
+                        
+                            <td class="action-btn" style="text-align: center;">
+                                <i class="fa-solid fa-pencil action-btn-menu edit-btn"></i>
+                            </td>
+                            <td class="action-btn" style="text-align: center; width: 34px;">
+                                <span class="action-btn-menu danger delete-btn">Delete</span>
+                            </td>
+                            
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>     
+</div>
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">User Details</h5>
+            <span id="close-btn" type="button" data-dismiss = "modal-overlay" aria-label="Close">X</span>
+        </div>
+        <div class="modal-body">
+            <div class="container mb-0">
+                <div class="row">
+                    <div id="api-reponse">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="form-label">Name</span>
+                        <input type="text" class="form-control" id="name" />
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="form-label">Address</span>
+                        <input type="text" class="form-control" id="address"/>
+                    </div>
+                    
+                    <div class="input-group mb-3">
+                        <span class="form-label">Email</span>
+                        <input type="email" class="form-control" id="email"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="form-label">Mobile No.</span>
+                        <input type="tel" class="form-control" id="mobile_no"/>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="close">Close</button>
+            <button class="btn btn-primary" onclick="addUser()">Add</button>
+        </div>
+    </div>
+    
+</div>
+<script>
+
+    var modal = document.getElementById("modal")
+    var btn = document.getElementById("addbtn")
+    var closeBtn = document.getElementById('close-btn')
+    var hideBtn = document.getElementById('close')
+    btn.onclick = function(){
+        modal.style.display = "block"
+    }
+    closeBtn.onclick = function(){
+        modal.style.display = 'none'
+    }
+    hideBtn.onclick = function(){
+        modal.style.display = 'none'
+    }
+
+    
+
+    async function updateDOM() {
+        try {
+            const response = await fetch('/users/data');
+            if (response.status ==200){
+                var data = await response.json();
+                data = data['data']
+                const booksList = document.getElementsByTagName('tbody')[0]
+
+                console.log(data)
+                data.forEach(user => {
+                    console.log(user)
+                    const listItem = `
+                        <tr>
+                            <td class="title" style="width:120px">`+user.name+`</td>
+                            <td class="title" style="width:140px">`+user.email+`Temp</td>
+                            <td class="publishers">`+user.address+`</td>
+                            <td class="publishers" style="width:120px">`+user.phone_no+`</td>
+                            <td class="action-btn" style="text-align: center;">
+                                <i class="fa-solid fa-pencil action-btn-menu edit-btn" onclick="deleteUser"></i>
+                            </td>
+                            <td class="action-btn" style="text-align: center; width: 34px;">
+                                <span class="action-btn-menu danger delete-btn">Delete</span>
+                            </td>
+                        </tr>
+                    `
+                   
+                });
+            }
+            else throw new Error('Error Occured while Retreiving Data')
+            
+        } catch (error) {
+            alert(error)
+        }
+    }
+
+    updateDOM()
+
+
+    async function addUser(){
+        var name = document.getElementById('name').value||''
+        var address = document.getElementById('address').value || ''
+        var email = document.getElementById('email').value ||''
+        var mobile_no = document.getElementById('mobile_no').value ||''
+        name = name.trim().toLowerCase()
+        address = address.trim().toLowerCase()
+        email = email.trim().toLowerCase()
+        mobile_no = mobile_no.trim()
+        var payload = {name,address,email,mobile_no}
+        console.log(payload)
+
+        try {
+            var response = await fetch('/user', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            })
+            if(response.status==201){
+                closeBtn.click()
+                var data = await response.json()
+                alert(data['message'])
+            }else if(response.status==409|| response.status ==500){
+                var data = await response.json()
+                throw new Error(data['message'])
+            }
+        } catch (error) {
+            alert(error)
+        }
+        
+    }
+    
+   
+</script>
+
+{% endblock %}
