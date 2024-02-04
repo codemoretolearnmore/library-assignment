@@ -25,25 +25,12 @@
                             <th scope="col" class="title">Email</th>
                             <th scope="col" class="authors">Address</th>
                             <th scope="col" class="publishers">Mobile No</th>
-                            <th scope="col" colspan="2" class="action-btn" style="width: 60px;">Actions</th>
+                            <th scope="col" colspan="1" class="action-btn" style="width: 60px;">Actions</th>
                             
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="title" style="width:120px">`+user.name+`</td>
-                            <td class="title" style="width:140px">`+user.email+`Temp</td>
-                            <td class="publishers">`+user.address+`</td>
-                            <td class="publishers" style="width:120px">`+user.phone_no+`</td>
                         
-                            <td class="action-btn" style="text-align: center;">
-                                <i class="fa-solid fa-pencil action-btn-menu edit-btn"></i>
-                            </td>
-                            <td class="action-btn" style="text-align: center; width: 34px;">
-                                <span class="action-btn-menu danger delete-btn">Delete</span>
-                            </td>
-                            
-                        </tr>
                         
                     </tbody>
                 </table>
@@ -125,16 +112,15 @@
                             <td class="title" style="width:140px">`+user.email+`Temp</td>
                             <td class="publishers">`+user.address+`</td>
                             <td class="publishers" style="width:120px">`+user.phone_no+`</td>
-                            <td class="action-btn" style="text-align: center;">
-                                <i class="fa-solid fa-pencil action-btn-menu edit-btn" onclick="deleteUser"></i>
-                            </td>
+                            
                             <td class="action-btn" style="text-align: center; width: 34px;">
-                                <span class="action-btn-menu danger delete-btn">Delete</span>
+                                <span class="action-btn-menu danger delete-btn" onclick="deleteUser('`+user._id+`')">Delete</span>
                             </td>
                         </tr>
                     `
-                   
+                    booksList.innerHTML+= listItem
                 });
+                
             }
             else throw new Error('Error Occured while Retreiving Data')
             
@@ -178,6 +164,57 @@
             alert(error)
         }
         
+    }
+
+    async function deleteUser(userID){
+        try {
+            
+            var response = await fetch('/user', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'userID':userID
+                            },
+                            
+                        })
+                        
+
+            if(response.status==204){
+                alert('user deleted')
+            }else{
+                data = await response.json()
+                throw new Error(data['message'])
+            }
+
+        } catch (error) {
+            alert(error)
+        }
+    }
+
+    async function editUser(userID){
+        console.log(userID)
+
+        try {
+            
+            var response = await fetch('/user', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'userID':userID
+                            },
+                            
+                        })
+                        data = await response.json()
+
+            if(response.status==204){
+                alert('user deleted')
+            }else{
+                throw new Error(data['message'])
+            }
+
+        } catch (error) {
+            alert(error)
+        }
     }
     
    
