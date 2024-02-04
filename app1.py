@@ -6,7 +6,19 @@ import uuid
 import mysql.connector
 from mysql.connector import Error, errorcode
 import requests
-conn = mysql.connector.connect(host = 'sql6.freesqldatabase.com', username = 'sql6681622', password = 'jz1dJylwGj', database = 'sql6681622')
+
+try:
+    conn = mysql.connector.connect(host = 'sql6.freesqldatabase.com', username = 'sql6681622', password = 'jz1dJylwGj', database = 'sql6681622')
+
+    if conn.is_connected():
+        print('connected')
+
+    else:
+        print('failed to connect to server')
+except mysql.connector.Error as e:
+    print(f"Error: ${e}")
+
+
 
 my_cursor = conn.cursor()
 
@@ -234,6 +246,12 @@ def get_users_data():
                 'message':'Internal Server Error'
             }
             return jsonify(response_data),500
+        response_data = {
+                'data':[],
+                'success':0,
+                'message':'Internal Server Error'
+            }
+        return jsonify(response_data),500
     except Exception as e:
         response_data = {
             'data':[],
@@ -290,12 +308,14 @@ def add_user():
 @app.route('/user', methods = ['DELETE'])
 def delete_user():
     try:
-        data = request.get_json()
+        
         # user_id = data['user_id']
-        user_id = endUserID
+        user_id = request.headers.get('userID')
+        print(user_id)
         delete_user_query = 'delete from users where _id = %s'
-        my_cursor.execute(delete_user,(user_id,))
+        my_cursor.execute(delete_user_query,(user_id,))
         conn.commit()
+        
         if my_cursor.rowcount>0:
             return '',204
         else:
@@ -303,9 +323,12 @@ def delete_user():
     except mysql.connector.Error as mysql_error:
         if mysql_error.errno == errorcode.CR_SERVER_LOST or mysql_error.errno == errorcode.CR_SERVER_GONE_ERROR:
             return jsonify({'message':'Internal Server Error'}),500
+        print(mysql_error)
+        return jsonify({'message':'Internal Server Error'}),500
     except NoUserException:
-        return jsonify({'message':'No user found with provided data'})
-    except:
+        return jsonify({'message':'No user found with provided data'}),400
+    except Exception as e:
+        print(e)
         return jsonify({'message':'Internal Server Error'}),500
 
 
