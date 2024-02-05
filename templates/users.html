@@ -101,7 +101,7 @@
             if (response.status ==200){
                 var data = await response.json();
                 data = data['data']
-                const booksList = document.getElementsByTagName('tbody')[0]
+                const usersList = document.getElementsByTagName('tbody')[0]
 
                 console.log(data)
                 data.forEach(user => {
@@ -118,8 +118,10 @@
                             </td>
                         </tr>
                     `
-                    booksList.innerHTML+= listItem
+                    usersList.innerHTML+= listItem
                 });
+                if(data.length==0)
+                usersList.innerHTML = '<tr>No Users Data</tr>'
                 
             }
             else throw new Error('Error Occured while Retreiving Data')

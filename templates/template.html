@@ -47,8 +47,8 @@
             height: 0px;
             overflow: hidden;
             transition: height 1s;
-            border: 1px solid lightgray;
-            visibility: hidden;
+            /* border: 1px solid lightgray; */
+            display: hidden;
             background-color: white;
         }
 
@@ -655,8 +655,13 @@
         
         //Show the list on btn click
         arrow.addEventListener("click", () => {
-        list.classList.toggle("show");
-        arrow.classList.toggle("up");
+            list.classList.toggle("show");
+            arrow.classList.toggle("up");
+        })
+
+        list.addEventListener('click',()=>{
+            list.classList.toggle('show')
+            
         })
 
         function getUsers(){

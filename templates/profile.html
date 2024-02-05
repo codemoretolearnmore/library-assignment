@@ -98,10 +98,11 @@
                 }
             })
             var result = await response.json()
+            const elem = document.getElementById('info-container')
             if(response.status ==200){
                 console.log(result['data'])
                 data = result['data']
-                const elem = document.getElementById('info-container')
+                
                 const html = `
                             <div class="editable" id="name">`+data['name']+`</div>
                                 <div class="non-editable" id="email">`+data['email']+`</div>
@@ -111,9 +112,12 @@
                                 <button id="saveBtn" class="btn btn-primary" onclick="saveProfile()">Save</button>
                             `
                 elem.innerHTML = html
-            }else throw new Error(result['message'])
+                // if(data)
+            }else if (response.status==400){
+                elem.innerHTML = '<div class="editable" id="name">No User Found</div>'
+            } else throw new Error('Internal Error')
         } catch (error) {
-            aler(error)
+            alert(error)
         }
     }    
     getUserProfile()
