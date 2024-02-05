@@ -222,6 +222,8 @@ def load_ProfileData():
         if mysql_error.errno == errorcode.CR_SERVER_LOST or mysql_error.errno == errorcode.CR_SERVER_GONE_ERROR:
             return jsonify({'data':{},'message':'Intenal Server Error Occured', 'success':0}),500
         return jsonify({'data':{},'message':'Internal Error','success':0}),500
+    except NoUserException:
+        return jsonify({'data':{},'message':'No User Found','success':0}),400
     except Exception as e:
         print(e)
         return jsonify({'data':{},'message':'Internal Server Error', 'success':0}),500
