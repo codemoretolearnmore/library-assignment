@@ -662,6 +662,16 @@
             
         })
 
+        window.onload = function(){
+            const userID = localStorage.getItem('userID')
+            const role = localStorage.getItem('role')
+            if(role=='admin')
+            window.location.href = '/users'
+            else if(role = 'user')
+            window.location.href = '/'
+            else window.location.href = '/login'
+        }
+
         function getUsers(){
             fetch('/users',{
                 method:'GET',

@@ -296,11 +296,11 @@
     window.onload = function(){
         const userID = localStorage.getItem('userID')
         const role = localStorage.getItem('role')
-        if(role=='admin')
-        window.location.href = '/users'
-        else if(role = 'user')
-        window.location.href = '/'
-        else window.location.href = '/login'
+        if(userID!='' || userID!=null){
+
+        }else{
+            window.location.href = '/login'
+        }
     }
 
     async function updateDOM() {
