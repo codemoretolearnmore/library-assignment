@@ -1,0 +1,124 @@
+{% extends 'template.html' %}
+
+{% block title %}Books - Library Management{% endblock %}
+
+{% block content %}
+
+    <style>
+        #myForm{
+            width: 100%;
+            height: auto;
+        }
+
+        .form-container{
+            width: 400px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            vertical-align: middle;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-logo{
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            vertical-align: middle;
+            align-items: center;
+            text-align: center;
+            border: 1px solid lightgray;
+            border-radius: 50%;
+            background-color: black;
+        }
+        .profile-card {
+        width: 400px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100px;
+            margin: auto;
+        }
+
+        .image-container img {
+        width: 100%;
+        display: block;
+        border-radius: 50%;
+        }
+
+        .info-container {
+        padding: 16px;
+        text-align: center;
+        justify-content: center;
+        }
+
+        .editable {
+        margin-bottom: 10px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        outline: none;
+        border: none;
+        text-align: center;
+        }
+    </style>
+    <form id="myForm">
+        <div class="form-container">
+            <div class="profile-wrapper">
+                <div class="profile-card" id="profileCard">
+                    <div class="image-container">
+                      <img src="https://i.pinimg.com/280x280_RS/fe/7d/ee/fe7deef834e1fafe56f8023ced803ca9.jpg" alt="Profile Image">
+                    </div>
+                    <div class="info-container" id="info-container">
+                        <div class="input-group" >
+                            <input type="email" class="form-control" id="email" placeholder="Enter email to Login"/>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitForm()">Log In</button>
+                    </div>
+                  </div>
+            </div>
+            
+            
+        </div>
+        
+    </form>
+    <div id="result"></div>
+    <script>
+        async function submitForm() {
+            var email = document.getElementById('email').value;
+            email = email.trim()
+
+            // Validate numerical values
+            if (email.length==0) {
+                alert("Please enter valid email");
+                return;
+            }
+
+            const data = {
+                'email': email,
+            };
+
+            const response =await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            const result =await response.json()
+            if(response.status==200){
+                localStorage.setItem('userID',result.user.userID)
+                localStorage.setItem('role','user')
+                window.location.href = '/'
+            }else throw new Error(result.message)
+            
+        }
+    </script>
+    <script src="../static/script.js"></script>
+
+    
+{% endblock %}

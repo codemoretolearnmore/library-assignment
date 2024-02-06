@@ -89,6 +89,21 @@
     var modal = document.getElementById("modal")
     var btn = document.getElementById("addbtn")
     var closeBtn = document.getElementById('close-btn')
+
+    window.onload = function(){
+        const userID = localStorage.getItem('userID')
+        const role = localStorage.getItem('role')
+        if((userID!='' && userID!=null)){
+            if(role=='user'){
+                alert('You do not have access to this page')
+                window.location.href = '/'
+            }
+            
+        }else{
+            window.location.href='/login'
+        }
+    }
+
     btn.onclick = function(){
         modal.style.display = "block"
     }

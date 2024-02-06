@@ -261,7 +261,7 @@
                     <div id="api-reponse">
                     </div>
                     <div class="input-group mb-3">
-                        <input type="text" class="input-control" id="keyword" placeholder="Search Book" style="width: 50%;" oninput="searchBooks()" />
+                        <input type="text" class="input-control" id="keyword" placeholder="Type 3 or more character" style="width: 50%;" oninput="searchBooks()" />
                         <!-- <button class="btn-dark btn-search" onclick="importAndAddBook()">Search</button> -->
                         <input type="number" class="input-control" id="purchase_qty" placeholder="Units to Purchase"/>
                     </div>
@@ -330,13 +330,11 @@
                     var mm = String(today.getMonth() + 1).padStart(2, '0'); 
                     var yyyy = today.getFullYear();
                     var today = mm + '/' + dd + '/' + yyyy;
-                    console.log('today', today)
                     today = new Date(today)
                     
                     const diffTime = Math.abs(today - purchase_date);
                     
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    console.log(purchase_date, today, diffDays)
                     total_amount = diffDays*25
                     if(purchase.return_date ==null || purchase.return_date ==""){
                         status = 'Not Returned'
@@ -358,6 +356,9 @@
                     
                     booksList.innerHTML+=listItem
                 });
+                if(data.length==0){
+                    booksList.innerHTML = '<tr>No data available</tr>'
+                }
             }
             else throw new Error(data['message'])
         } catch (error) {
@@ -371,13 +372,13 @@
 
     async function searchBooks(){
         localStorage.setItem('selectedBook',null)
-        const searchInput = document.getElementById('keyword').value
+        var searchInput = document.getElementById('keyword').value
         var resultContainer = document.getElementById('results')
         resultContainer.innerHTML = ''
         resultContainer.style.display = 'flex'
         try {
             if (searchInput.trim() !== '' && searchInput.trim().length>=3) {
-                const response = await fetch(`/books/data?keyword=${encodeURIComponent(searchInput)}`);
+                var response = await fetch(`/books/data?keyword=${encodeURIComponent(searchInput)}`);
                 var data = await response.json(); 
                 
                 if (response.status!==200) {
@@ -388,7 +389,7 @@
                 console.log(books.length)
                 if(books.length>0){
                     books.forEach(book => {
-                        const listItem = document.createElement('li');
+                        var listItem = document.createElement('li');
                         listItem.textContent = book.title;
                         listItem.className = 'group-item'
                         resultContainer.appendChild(listItem);
@@ -397,7 +398,7 @@
                         
                     });
                 }else{
-                    const listItem = document.createElement('li');
+                    var listItem = document.createElement('li');
                     listItem.textContent = 'No Book Found';
                     listItem.className = 'group-item'
                     resultContainer.appendChild(listItem)
@@ -438,6 +439,9 @@
             var result = await response.json()
             if(response.status!==201)
             throw new Error(result['message']);
+            
+            document.getElementById('purchase_qty').value = ''
+            document.getElementById('keyword').value = ''
             closeBtn.click()
             alert(result['message'])
             

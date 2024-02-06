@@ -94,6 +94,19 @@
     }
 
     
+    window.onload = function(){
+        const userID = localStorage.getItem('userID')
+        const role = localStorage.getItem('role')
+        if((userID!='' && userID!=null)){
+            if(role=='user'){
+                alert('You do not have access to this page')
+                window.location.href = '/'
+            }
+            
+        }else{
+            window.location.href='/login'
+        }
+    }
 
     async function updateDOM() {
         try {

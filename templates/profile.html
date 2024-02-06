@@ -85,7 +85,12 @@
 </div>
 
 <script>
-
+    window.onload = function(){
+        const userID = localStorage.getItem('userID')
+        if(userID ==null || userID=='')
+        window.location.href = '/login'
+        console.log(userID)
+    }
     async function getUserProfile(){
         const userID = localStorage.getItem('userID')
         
@@ -113,7 +118,7 @@
                             `
                 elem.innerHTML = html
                 // if(data)
-            }else if (response.status==400){
+            }else if (response.status==404){
                 elem.innerHTML = '<div class="editable" id="name">No User Found</div>'
             } else throw new Error('Internal Error')
         } catch (error) {
