@@ -1,9 +1,10 @@
 # library-assignment
 
 ##This App contains 3 screens
+<li>Simple Login with email at "/login". User first needs to be created by admin</li>
 <li>User Profile Screen at path "/" </li>
-<li>Users Page to create users at path "/users" </li>
-<li>Books Database for librarian to import books and manage at path"/books" </li>
+<li>Users Page to create users at path "/users" only admin access </li>
+<li>Books Database for librarian to import books and manage at path"/books" only admin access </li>
 <li>Transactions Done by users at path "/purchase" </li>
 
 <b>As of now to keep it simple, I've taken a user as an example which will be hardcoded in layout.html in localstorage</b>
