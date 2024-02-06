@@ -76,6 +76,48 @@ def add_book(my_cursor,book,conn):
 def index():
     return render_template('profile.html')
 
+@app.route('/login', methods = ['GET'])
+def load_login_page():
+    return render_template('login.html', user = {})
+
+@app.route('/login',methods = ['POST'])
+def login():
+    data = request.get_json()
+    email = data['email']
+    try:
+        get_user_query = 'select * from users where email = %s'
+        my_cursor.execute(get_user_query,(email,))
+        user_result = my_cursor.fetchone()
+        
+        if not user_result or user_result is None:
+            raise NoUserException("No User with this data")
+        else:
+            userID, email, name, address, phone_no = user_result[0], user_result[1], user_result[2],user_result[3], user_result[4]
+            return jsonify({'user':{'userID':userID,'email':email,'name':name,'address':address,'phone_no':phone_no},'message':'logged in','success':1}),200
+    except mysql.connector.Error as mysql_error:
+        if mysql_error.errno == errorcode.CR_SERVER_LOST or mysql_error.errno == errorcode.CR_SERVER_GONE_ERROR:
+            
+            response_data = {
+                'user':{},
+                'success':0,
+                'message':'Internal Server Error'
+            }
+            return jsonify(response_data),500
+        print(mysql_error)
+        return jsonify({
+                'user':{},
+                'success':0,
+                'message':'Internal Server Error'
+            }),500
+    except NoUserException:
+        return jsonify({
+                'user':{},
+                'success':0,
+                'message':'No User Found'
+            }),404
+    except Exception as e:
+        print(e)
+        return jsonify({'user':{},'message':'Interal Error','success':0}),500
 
 @app.route('/books',methods = ['GET'])
 def load_books_page():
@@ -87,6 +129,7 @@ def load_books_page():
 def get_books_data():
     keyword = request.args.get('keyword', '').lower()
     keyword = keyword.strip()
+    books_data  = []
     try:
         if len(keyword)==0:
             get_book_query = 'SELECT DISTINCT * FROM books LIMIT 20'
@@ -101,7 +144,7 @@ def get_books_data():
             columns = ['bookID','title', 'authors','average_rating','isbn_13','langauge_code','num_pages','ratings_count','text_reviews_count','publisher','quantity']
             df = pd.DataFrame(results, columns=columns)
             books_data =  df.to_dict(orient='records')
-            print(books_data)
+            print('results',books_data)
         response_data = {
             'data':books_data,
             'success':1,
@@ -117,7 +160,7 @@ def get_books_data():
                 'message':'Internal Server Error'
             }
             return jsonify(response_data),500
-        print(mysql_error)
+        
         return jsonify({
                 'data':[],
                 'success':0,
@@ -204,16 +247,16 @@ def load_user_page():
 def load_ProfileData():
     userID = request.headers.get('userID')
     try:
-        get_profile_query = 'select name, email, phone_no, address from users where _id = %s'
+        get_profile_query = 'select _id, name, email, phone_no, address, role from users where _id = %s'
         row = my_cursor.execute(get_profile_query,(userID,))
         row = my_cursor.fetchone()
-        print(userID,row)
-        if not row:
+        
+        if not row or row is None:
             raise NoUserException("No User Found with this ID")
-        name, email,phone_no,address = row[0],row[1],row[2],row[3]
+        userID, name, email,phone_no,address, role,  = row[0],row[1],row[2],row[3], row[4], row[5]
         
         data = {
-            'data':{'name':name, 'email':email,'phone_no':phone_no,'address':address},
+            'data':{'iserID':userID, 'name':name, 'email':email,'phone_no':phone_no,'address':address, 'role':role},
             'message':'ok',
             'success':1
         }
@@ -223,7 +266,7 @@ def load_ProfileData():
             return jsonify({'data':{},'message':'Intenal Server Error Occured', 'success':0}),500
         return jsonify({'data':{},'message':'Internal Error','success':0}),500
     except NoUserException:
-        return jsonify({'data':{},'message':'No User Found','success':0}),400
+        return jsonify({'data':{},'message':'No User Found','success':0}),404
     except Exception as e:
         print(e)
         return jsonify({'data':{},'message':'Internal Server Error', 'success':0}),500
@@ -314,7 +357,7 @@ def delete_user():
         # user_id = data['user_id']
         user_id = request.headers.get('userID')
         print(user_id)
-        delete_user_query = 'delete from users where _id = %s'
+        delete_user_query = 'update users set is_deleted = 0 where _id = %s'
         my_cursor.execute(delete_user_query,(user_id,))
         conn.commit()
         
@@ -435,7 +478,7 @@ def add_purchase():
     purchase_id = str(uuid.uuid4())
     
     try:
-        conn.start_transaction()
+        # conn.start_transaction()
         # conn.commit()
         # get total dues of user
 
@@ -475,7 +518,7 @@ def add_purchase():
         else:
             raise Exception("Error Occured")
     except mysql.connector.Error as mysql_error:
-        conn.rollback()
+        # conn.rollback()
         if mysql_error.errno == errorcode.CR_SERVER_LOST or mysql_error.errno == errorcode.CR_SERVER_GONE_ERROR:
             response_data = {
                 'data':{},
@@ -486,14 +529,14 @@ def add_purchase():
         print('reached here', mysql_error)
         return jsonify({'data':{},'success':0,'message':'Server Error'}),500
     except NotEnoughStockError as e:
-        conn.rollback()
+        # conn.rollback()
         return jsonify({'data':{},'message':'Stock not available for this book', 'success':0}), 409
     except DueLimitExceedError as e:
-        conn.rollback()
+        # conn.rollback()
         return jsonify({'data':{},'message':'Your dues exceeding limit 500 rupees', 'success':0}),409
     except Exception as e:
         print(e)
-        conn.rollback()
+        # conn.rollback()
         return jsonify({'data':{},'message':'Internal Server Error', 'success':0}),500
     finally:
         conn.autocommit = True
