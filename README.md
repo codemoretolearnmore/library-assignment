@@ -1,5 +1,7 @@
 # library-assignment
 
+<b>Admin Account - admin@email.com</b>
+
 ##This App contains 3 screens
 <li>Simple Login with email at "/login". User first needs to be created by admin</li>
 <li>User Profile Screen at path "/" </li>
